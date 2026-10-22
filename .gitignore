@@ -1,0 +1,23 @@
+# Credentials & Secrets (CRITICAL: Never commit to GitHub)
+CREDS
+*creds*
+*.env
+profiles.yml
+
+# Python virtual environment
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# dbt artifacts, packages, and logs
+target/
+dbt_packages/
+logs/
+*.log
+
+# OS & Editor generated files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
