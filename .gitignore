@@ -2,6 +2,7 @@
 CREDS
 *creds*
 *.env
+.env
 profiles.yml
 
 # Python virtual environment
@@ -15,6 +16,7 @@ target/
 dbt_packages/
 logs/
 *.log
+.user.yml
 
 # OS & Editor generated files
 .DS_Store
