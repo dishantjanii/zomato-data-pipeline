@@ -1,7 +1,7 @@
 import os
 import json
 import snowflake.connector
-from groq import Groq
+import google.generativeai as genai
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -115,8 +115,7 @@ def main():
     if len(reviews)==0:
         print("No reviews to enrich,exiting")
         return
-
-    
+ 
     results=[]
 
     for review_id,comment in reviews:
@@ -142,6 +141,7 @@ def main():
     conn.commit()
     cursor.close()
     conn.close()
+
         
 if __name__ == "__main__":
     main()
