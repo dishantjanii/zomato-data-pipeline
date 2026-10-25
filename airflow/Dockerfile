@@ -10,11 +10,11 @@ RUN mkdir -p /opt/airflow/dbt_venv && \
 # Switch back to airflow user for python/pip installations
 USER airflow
 
-# Providers: snowflake, fab (classic username/password login), openai (AI task)
+# Providers: snowflake, fab (classic username/password login), google-generativeai (AI task)
 RUN pip install --no-cache-dir \
     apache-airflow-providers-snowflake \
     apache-airflow-providers-fab \
-    openai
+    google-generativeai
 
 # dbt in its own venv so it never clashes with Airflow's dependencies.
 # DAG tasks call /opt/airflow/dbt_venv/bin/dbt
