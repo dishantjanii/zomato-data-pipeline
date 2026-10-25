@@ -1,4 +1,4 @@
-# Airflow 3.x image + Snowflake provider + FAB auth (for admin/admin login) + dbt venv + openai.
+# Airflow 3.x image + Snowflake provider + FAB auth (for admin/admin login) + dbt venv + google-generativeai.
 FROM apache/airflow:3.0.3
 
 USER root
@@ -18,6 +18,5 @@ RUN pip install --no-cache-dir \
 
 # dbt in its own venv so it never clashes with Airflow's dependencies.
 # DAG tasks call /opt/airflow/dbt_venv/bin/dbt
-# dbt in its own venv so it never clashes with Airflow's dependencies.
 RUN python -m venv /opt/airflow/dbt_venv && \
     /opt/airflow/dbt_venv/bin/pip install --no-cache-dir --prefer-binary "dbt-snowflake==1.8.*"

@@ -1,19 +1,17 @@
 import os
 import json
 import snowflake.connector
-from groq import Groq
+import google.generativeai as genai
 from dotenv import load_dotenv
 
 load_dotenv()
 
-
-MODEL = "openai/gpt-oss-120b"
-
+MODEL = "gemini-1.5-flash"
 SAMPLE_N = 5
 TOPICS = ["food quality","delivery","pricing","service","packaging","other"]
-client = Groq(
-    api_key=os.getenv("GROK_API_KEY"),
-)
+
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 
 SYSTEM_PROMPT = f"""
@@ -79,18 +77,21 @@ def get_reviews_to_enrich(cursor):
     return cursor.fetchall()
 
 def classify_review(comment):
+    try:
+        response = model.generate_content(
+            [SYSTEM_PROMPT, comment],
+            generation_config=genai.types.GenerationConfig(
+                temperature=0.0,
+                response_mime_type='application/json'
+            )
+        )
+        answer = response.text.strip()
+        return json.loads(answer)
+    except Exception as e:
+        raise e
 
-    response=client.chat.completions.create(
-        model=MODEL,
-        messages=[{"role":"system","content":SYSTEM_PROMPT},{"role":"user","content":comment}],
-        temperature=0.0,
-        response_format={"type":"json_object"}
-    )
-    answer=response.choices[0].message.content.strip()
-    return json.loads(answer)
 
-
-def save_results(cursor,results):
+def save_results(cursor, results):
     cursor.executemany("""
         INSERT INTO ZOMATO.AI.REVIEW_ENRICHED(
             REVIEW_ID,
@@ -103,45 +104,44 @@ def save_results(cursor,results):
 
         VALUES(%(REVIEW_ID)s,%(SENTIMENT_LABEL)s,%(SENTIMENT_SCORE)s,%(TOPIC)s,%(KEY_ISSUE)s,%(MODEL)s)
 
-    """,results)
+    """, results)
 
 
 def main():
-    conn=get_connection()
-    cursor=conn.cursor()
+    conn = get_connection()
+    cursor = conn.cursor()
 
     create_output_table(cursor)
-    reviews=get_reviews_to_enrich(cursor)
-    if len(reviews)==0:
+    reviews = get_reviews_to_enrich(cursor)
+    if len(reviews) == 0:
         print("No reviews to enrich,exiting")
         return
 
- 
-    results=[]
+    results = []
 
-    for review_id,comment in reviews:
+    for review_id, comment in reviews:
         print(f"classifying {review_id} : {comment}")
         try:
-            labels=classify_review(comment)
+            labels = classify_review(comment)
             print(f"labels for review {review_id}:{labels}")
             results.append(
                 {
-                    "REVIEW_ID":review_id,
-                    "SENTIMENT_LABEL":labels["sentiment_label"],
-                    "SENTIMENT_SCORE":labels["sentiment_score"],
-                    "TOPIC":labels["topic"],
-                    "KEY_ISSUE":labels["key_issue"],
-                    "MODEL":MODEL
+                    "REVIEW_ID": review_id,
+                    "SENTIMENT_LABEL": labels["sentiment_label"],
+                    "SENTIMENT_SCORE": labels["sentiment_score"],
+                    "TOPIC": labels["topic"],
+                    "KEY_ISSUE": labels["key_issue"],
+                    "MODEL": MODEL
                 }
             )
         except Exception as e:
             print(f"Error classifying review {review_id}: {str(e)}")
-    
-    save_results(cursor,results)
+
+    save_results(cursor, results)
     print(f"successfully classified {len(results)} reviews")
     conn.commit()
     cursor.close()
     conn.close()
-        
+
 if __name__ == "__main__":
-    main()()
+    main()
