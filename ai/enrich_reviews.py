@@ -23,6 +23,7 @@ for the review you are given,return:
 -topic: one of {TOPICS}
 -key_issue: a short phrase of 6 words or less that describes the main issue in the review, if any. if there is no issue, return null
 
+
 Reply as JSON in this exact format:
 {{
     "sentiment_label":"<sentiment_label>",
