@@ -12,3 +12,4 @@
       "Resource": "arn:aws:s3:::<BUCKET>"
     }
   ]
+}
