@@ -46,7 +46,7 @@ dbt — ZOMATO.MARTS (Gold)
         │                 Revenue, restaurants, delivery SLA, reviews
         │
         └──────────────► AI workflow
-                           OpenAI review enrichment
+                           Gemini AI review enrichment
                                   │
                                   ▼
                            ZOMATO.AI / dbt AI mart
@@ -78,7 +78,7 @@ The platform is organized into layers so ingestion, transformation, orchestratio
 | **Historical tracking** | Snowflake snapshots | Supports an SCD Type 2 snapshot |
 | **AI data** | Snowflake `ZOMATO.AI` | Stores LLM-enriched review data for downstream modeling |
 | **Orchestration** | Apache Airflow 3 in Docker | Runs the daily pipeline DAG and coordinates task dependencies |
-| **AI applications** | OpenAI + Streamlit | Review enrichment, review RAG, and natural-language text-to-SQL |
+| **AI applications** | Gemini AI + Streamlit | Review enrichment, review RAG, and natural-language text-to-SQL |
 
 ### Pipeline orchestration
 
@@ -184,7 +184,7 @@ The dbt project includes:
 
 **File:** [`ai/enrich_reviews.py`](ai/enrich_reviews.py)
 
-The enrichment step sends review text to OpenAI `gpt-4o-mini` and requests structured JSON containing fields such as sentiment and topic. The enriched records are written to `ZOMATO.AI.REVIEW_ENRICHED`, where dbt can model them into review-insight marts.
+The enrichment step sends review text to OpenAI `gemini-3.5-flash` and requests structured JSON containing fields such as sentiment and topic. The enriched records are written to `ZOMATO.AI.REVIEW_ENRICHED`, where dbt can model them into review-insight marts.
 
 The script is described as idempotent and supports a `SAMPLE_N` cap to control how many reviews are processed and help manage API costs.
 
@@ -220,7 +220,7 @@ The text-to-SQL application supplies the Gold marts' schema to the LLM so it can
 │   └── macros/                       # Custom schema-name macro
 │
 ├── ai/
-│   ├── enrich_reviews.py             # OpenAI review enrichment
+│   ├── enrich_reviews.py             # Gemini AI review enrichment
 │   ├── rag_chat.py                   # Streamlit review RAG application
 │   ├── text_to_sql.py                # Streamlit text-to-SQL application
 │   └── example.env                   # AI credentials template
