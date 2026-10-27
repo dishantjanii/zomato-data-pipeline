@@ -144,5 +144,10 @@ if question:
             ):
                 st.bar_chart(df, x=df.columns[0], y=df.columns[1])
 
+
+
+
+
+        
         except Exception as e:
             st.error(f"Error running query: {e}")
