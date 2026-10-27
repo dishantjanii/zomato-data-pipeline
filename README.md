@@ -61,7 +61,7 @@ dbt — ZOMATO.MARTS (Gold)
 Apache Airflow orchestrates the scheduled load → transform → enrich → AI-mart workflow.
 ```
 
-> **Architecture diagram:** The repository also includes [`docs/architecture.png`](docs/architecture.png). The diagram above provides a quick overview directly in this README.
+
 
 
 ## 🧱 Architecture and data flow
